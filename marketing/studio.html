@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=540, initial-scale=1">
+<title>Moosi Video-Studio</title>
+<style>
+  html,body{margin:0;width:540px;height:960px;overflow:hidden;background:#000;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  #f{position:relative;width:540px;height:960px;overflow:hidden}
+  .bg{position:absolute;inset:0}
+  .cap{position:absolute;left:30px;right:70px;text-align:center;z-index:5}
+  .cap span{display:inline;background:#fff;color:#111;font-weight:800;font-size:30px;line-height:1.5;padding:4px 10px;border-radius:8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .cap.dark span{background:#111;color:#fff}
+  .big{position:absolute;left:0;right:0;text-align:center;color:#fff;font-weight:900;text-shadow:0 3px 12px rgba(0,0,0,.45);z-index:4}
+  .moosi{position:absolute;left:50%;top:50%;width:400px;height:400px;margin:-200px 0 0 -200px;z-index:3}
+  .moosi svg{width:100%;height:100%}
+  .notif{position:absolute;left:24px;right:24px;top:0;background:rgba(245,245,245,.97);border-radius:22px;padding:14px 16px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:6}
+  .notif .app{width:44px;height:44px;border-radius:11px;background:#111;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:22px}
+  .notif b{display:block;font-size:17px;color:#111}.notif small{font-size:15px;color:#444}
+  .timer{position:absolute;left:0;right:0;text-align:center;color:#fff;font-weight:800;font-size:72px;font-variant-numeric:tabular-nums;text-shadow:0 3px 12px rgba(0,0,0,.35);z-index:4}
+  .spark{position:absolute;font-size:34px;z-index:4}
+  .phone{position:absolute;left:50%;top:50%;width:300px;height:620px;margin:-280px 0 0 -150px;border-radius:44px;background:#111;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:3}
+  .phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:34px;display:block}
+  .num{position:absolute;left:50%;top:205px;transform:translateX(-50%);width:70px;height:70px;border-radius:50%;background:#fff;color:#111;font-weight:900;font-size:40px;display:flex;align-items:center;justify-content:center;z-index:5}
+</style></head>
+<body><div id="f"></div>
+<script>
+"use strict";
+// ---------- Moosi (gleiche Figur wie in der App) ----------
+function moosiSVG({ stage = 2, sad = false, hat = "none", look = 0, flower = null }) {
+  const r = 34 + stage * 9, cy = 150 - r * 0.55, eyeY = cy - r * 0.1, n = Math.floor(stage + 1e-6);
+  const mouth = sad
+    ? `<path d="M100 ${eyeY + 22} q10 -8 20 0" stroke="#1d2b1d" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    : `<path d="M100 ${eyeY + 16} q10 10 20 0" stroke="#1d2b1d" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  let sprouts = "";
+  for (let i = 0; i < n; i++) {
+    const x = 110 + (i - (n - 1) / 2) * 16;
+    sprouts += `<path d="M${x} ${cy - r + 4} q-6 -14 0 -22" stroke="#3d8b4e" stroke-width="3" fill="none"/><ellipse cx="${x + 5}" cy="${cy - r - 14}" rx="6" ry="3.5" fill="#6cc27f" transform="rotate(-30 ${x + 5} ${cy - r - 14})"/>`;
+  }
+  if (flower ?? n >= 4) sprouts += `<circle cx="${110 + r * 0.55}" cy="${cy - r * 0.7}" r="7" fill="#ffd34e"/><circle cx="${110 + r * 0.55}" cy="${cy - r * 0.7}" r="3" fill="#f08a24"/>`;
+  const hy = cy - r + 2;
+  const hats = {
+    none: "",
+    cap: `<path d="M85 ${hy} q25 -30 50 0 z" fill="#d64545"/><rect x="125" y="${hy - 4}" width="26" height="6" rx="3" fill="#a83232"/>`,
+    flower: `<g transform="translate(92 ${hy - 6})"><circle r="9" fill="#fff"/><circle r="4" fill="#f5b700"/></g>`,
+    headphones: `<path d="M${110 - r * 0.85} ${cy} a${r * 0.85} ${r * 0.85} 0 0 1 ${r * 1.7} 0" stroke="#333" stroke-width="5" fill="none"/><rect x="${110 - r * 0.95}" y="${cy - 8}" width="12" height="20" rx="5" fill="#555"/><rect x="${110 + r * 0.95 - 12}" y="${cy - 8}" width="12" height="20" rx="5" fill="#555"/>`,
+    wizard: `<path d="M90 ${hy + 2} L110 ${hy - 48} L130 ${hy + 2} z" fill="#5b3fa8"/><circle cx="110" cy="${hy - 20}" r="3" fill="#ffd34e"/>`,
+    crown: `<path d="M88 ${hy} l6 -24 l10 14 l6 -18 l6 18 l10 -14 l6 24 z" fill="#f2c230" stroke="#b8860b" stroke-width="2"/>`,
+  };
+  const ex = look * 3;
+  const blush = sad ? "" : `<circle cx="${110 - r * 0.45}" cy="${eyeY + 12}" r="5" fill="#f29c9c" opacity=".6"/><circle cx="${110 + r * 0.45}" cy="${eyeY + 12}" r="5" fill="#f29c9c" opacity=".6"/>`;
+  const tear = sad ? `<path d="M${110 + r * 0.32} ${eyeY + 6} q-3 8 0 10 q3 -2 0 -10" fill="#7cc6ff"/>` : "";
+  return `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="110" cy="200" rx="62" ry="8" fill="rgba(0,0,0,.18)"/>
+  <path d="M70 150 h80 l-10 48 h-60 z" fill="#c4744a"/><rect x="64" y="144" width="92" height="12" rx="4" fill="#d98a5c"/>
+  ${sprouts}
+  <ellipse cx="110" cy="${cy}" rx="${r}" ry="${r * 0.9}" fill="${sad ? "#7a9a72" : "#59a96a"}"/>
+  <ellipse cx="${110 - r * 0.35}" cy="${cy - r * 0.45}" rx="${r * 0.3}" ry="${r * 0.15}" fill="#fff" opacity=".18"/>
+  <circle cx="${110 - r * 0.32 + ex}" cy="${eyeY - Math.abs(look) * 2}" r="5" fill="#1d2b1d"/><circle cx="${110 + r * 0.32 + ex}" cy="${eyeY - Math.abs(look) * 2}" r="5" fill="#1d2b1d"/>
+  <circle cx="${110 - r * 0.32 + 1.5 + ex}" cy="${eyeY - 1.5 - Math.abs(look) * 2}" r="1.6" fill="#fff"/><circle cx="${110 + r * 0.32 + 1.5 + ex}" cy="${eyeY - 1.5 - Math.abs(look) * 2}" r="1.6" fill="#fff"/>
+  ${blush}${tear}${mouth}${hats[hat] || ""}</svg>`;
+}
+
+// ---------- Helfer ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const pop = (x) => { x = clamp(x); return x === 1 ? 1 : 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2); }; // leichtes Überschwingen
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const grad = (a, b) => `linear-gradient(165deg, ${a}, ${b})`;
+const FOREST = grad("#4a8f5a", "#1c4628"), NIGHT = grad("#33427a", "#0f1630"), SUNSET = grad("#f08a5d", "#7a3b69");
+const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+function cap(text, top, alpha = 1, dark = false) {
+  if (alpha <= 0) return "";
+  return `<div class="cap${dark ? " dark" : ""}" style="top:${top}px;opacity:${alpha};transform:translateY(${(1 - alpha) * 14}px)"><span>${esc(text)}</span></div>`;
+}
+const fade = (t, a, b, f = .25) => Math.min(seg(t, a, a + f), 1 - seg(t, b - f, b));
+function moosi(opts, { scale = 1, y = 0, rot = 0, x = 0 } = {}) {
+  return `<div class="moosi" style="transform:translate(${x}px,${y - 10}px) scale(${scale * 1.25}) rotate(${rot}deg)">${moosiSVG(opts)}</div>`;
+}
+function sparkles(t, t0, n = 10, cy = 470) {
+  if (t < t0) return "";
+  let h = "";
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + i, p = seg(t, t0, t0 + 1.2), d = 60 + p * 190;
+    h += `<div class="spark" style="left:${255 + Math.cos(a) * d}px;top:${cy + Math.sin(a) * d * .8}px;opacity:${1 - p};transform:scale(${.6 + p})">${i % 3 ? "✨" : "⭐"}</div>`;
+  }
+  return h;
+}
+const bob = (t) => Math.sin(t * 2.4) * 6;
+
+// ---------- Videos ----------
+const VIDEOS = {
+  // 1) Handy-Check: Moosi merkt, dass du aufs Handy willst
+  "1-handy-check": { dur: 12, frame(t) {
+    const stage = t < 8 ? 2 + t * .05 : 2.4 + ease(seg(t, 8, 10.5)) * 1.6;
+    const sad = t > 4 && t < 7;
+    const look = t > 2.2 && t < 4.2 ? -ease(seg(t, 2.2, 2.6)) : 0;
+    const shake = t > 4 && t < 4.6 ? Math.sin(t * 60) * 4 : 0;
+    const nIn = ease(seg(t, 2, 2.4)), nOut = ease(seg(t, 6.6, 7.1));
+    const ny = -140 + nIn * 190 - nOut * 260;
+    let h = `<div class="bg" style="background:${FOREST}"></div>`;
+    h += t < 8.4 ? `<div class="timer" style="top:250px">${fmt(1421 - t)}</div>` : `<div class="timer" style="top:250px;font-size:60px;opacity:${seg(t, 8.4, 8.8)}">Geschafft! 🎉</div>`;
+    h += moosi({ stage, sad, look }, { y: 120 + bob(t), x: shake, scale: 1 + (t > 10.5 ? .04 * Math.sin((t - 10.5) * 8) * (1 - seg(t, 10.5, 12)) : 0) });
+    if (t > 1.9 && t < 7.2) h += `<div class="notif" style="transform:translateY(${ny}px)"><div class="app">♪</div><div><b>3 neue Videos für dich</b><small>Nur ganz kurz reinschauen? 👀</small></div></div>`;
+    h += cap("POV: dein Lernbuddy merkt, dass du aufs Handy schauen willst", 70, fade(t, 0, 2.1, .2));
+    h += cap("*denkt kurz drüber nach*", 360, fade(t, 2.6, 4.1));
+    h += cap("Moosi: bitte nicht 🥺", 360, fade(t, 4.2, 6.6));
+    h += cap("okay okay, ich leg's weg", 360, fade(t, 6.7, 8.3));
+    h += cap("45 Min später:", 140, fade(t, 8.4, 12.2));
+    h += sparkles(t, 10.3, 12, 560);
+    return h;
+  }},
+  // 2) 45 Minuten in 10 Sekunden
+  "2-zeitraffer": { dur: 11, frame(t) {
+    const p = seg(t, .8, 9);
+    const stage = p * 4;
+    const left = Math.round(45 * 60 * (1 - p));
+    const popS = 1 + .08 * Math.sin(seg(t, 9, 9.6) * Math.PI);
+    let h = `<div class="bg" style="background:${t < 9 ? NIGHT : FOREST}"></div>`;
+    h += cap("45 Minuten lernen in 10 Sekunden ⏱️", 100, fade(t, 0, 11.2));
+    h += `<div class="timer" style="top:250px;font-size:${t < 9 ? 84 : 64}px">${t < 9 ? fmt(left) : "Geschafft! 🎉"}</div>`;
+    h += moosi({ stage, flower: p >= .98 }, { y: 140 + bob(t) * .6, scale: popS });
+    h += `<div class="big" style="top:820px;font-size:30px;opacity:${seg(t, 9.2, 9.6)}">+55 🪙 · Streak 🔥 7</div>`;
+    h += sparkles(t, 9, 14, 560);
+    return h;
+  }},
+  // 3) Outfit-Check (Kommentar-Köder)
+  "3-outfit": { dur: 10, frame(t) {
+    const hats = ["cap", "flower", "headphones", "wizard", "crown"];
+    const i = clamp(Math.floor((t - .8) / 1.4), 0, hats.length - 1);
+    const local = t - .8 - i * 1.4;
+    const s = t < .8 ? 1 : pop(local / .35);
+    const bgs = [FOREST, SUNSET, NIGHT, grad("#2a8fbd", "#0b3954"), grad("#3a1c71", "#0b0b1e")];
+    let h = `<div class="bg" style="background:${t < .8 ? FOREST : bgs[i]}"></div>`;
+    h += cap("Welcher Hut steht Moosi am besten? 👇", 100, fade(t, 0, 10.2));
+    if (t >= .8 && t < 7.8) h += `<div class="num" style="transform:translateX(-50%) scale(${s})">${i + 1}</div>`;
+    h += moosi({ stage: 3, hat: t < .8 ? "none" : hats[i] }, { y: 110 + bob(t), scale: .92 + .08 * s, rot: t >= .8 && t < 7.8 ? (1 - clamp(local / .35)) * -8 : 0 });
+    h += cap("Schreib die Nummer in die Kommentare 💬", 250, fade(t, 7.9, 10.2));
+    return h;
+  }},
+  // 4) Entwickler-Story
+  "4-story": { dur: 14, frame(t) {
+    let h = `<div class="bg" style="background:${FOREST}"></div>`;
+    const lines = [
+      [0, 2.6, "Ich bin 19 und schreib nächstes Jahr Abi"],
+      [2.6, 5.2, "Mein Problem: 5 Stunden Bildschirmzeit am Tag 💀"],
+      [5.2, 7.6, "Also hab ich mir mit KI eine App gebaut"],
+      [7.6, 10.6, "Moosi wächst nur, wenn ich NICHT aufs Handy schaue 🌱"],
+      [10.6, 14.2, "Kostenlos, ohne Anmeldung. Link in Bio"],
+    ];
+    for (const [a, b, text] of lines) h += cap(text, 100, fade(t, a, b));
+    if (t < 5.2) {
+      const sad = t > 2.6;
+      h += moosi({ stage: 1.5, sad }, { y: 120 + bob(t), scale: 1 - .05 * seg(t, 2.6, 3) });
+      if (t > 2.6) h += `<div class="big" style="top:300px;font-size:64px;opacity:${seg(t, 2.7, 3)}">📱 5:12 h</div>`;
+    } else {
+      const s = pop(seg(t, 5.2, 5.7));
+      const img = t < 9.5 ? "shot-running.png" : "shot-done.png";
+      h += `<div class="phone" style="transform:translateY(${60 + (1 - s) * 400}px) rotate(${(1 - clamp(seg(t, 5.2, 6))) * 6}deg) scale(.95)"><img src="${img}"></div>`;
+    }
+    return h;
+  }},
+};
+window.VIDEOS = Object.fromEntries(Object.entries(VIDEOS).map(([k, v]) => [k, v.dur]));
+window.renderFrame = (id, t) => { document.getElementById("f").innerHTML = VIDEOS[id].frame(t); };
+</script></body></html>
