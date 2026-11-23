@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moosi – Fokus-Buddy</title>
+<meta name="description" content="Moosi wächst, solange du fokussiert bleibst. Der gemütliche Fokus-Timer gegen Handy-Ablenkung.">
+<meta name="theme-color" content="#2f5d3a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="icons/icon.svg" alt="" width="28" height="28"> Moosi</div>
+  <div class="chips">
+    <span class="chip" title="Münzen" id="coins">🪙 0</span>
+    <span class="chip" title="Streak" id="streak">🔥 0</span>
+    <button class="chip" id="langBtn" type="button">EN</button>
+  </div>
+</header>
+
+<main>
+  <section class="stage" id="stage" aria-live="polite">
+    <div id="creature" class="creature"></div>
+    <p class="msg" id="msg"></p>
+  </section>
+
+  <section class="timer">
+    <div class="time" id="time">25:00</div>
+    <div class="presets" id="presets"></div>
+    <div class="custom" id="customRow" hidden>
+      <input type="range" id="customRange" min="5" max="180" step="5" value="90">
+      <span id="customLabel">90 min</span>
+    </div>
+    <button class="primary" id="mainBtn" type="button"></button>
+  </section>
+
+  <nav class="bar">
+    <button type="button" data-open="shopDlg">🎩 <span data-t="shop"></span></button>
+    <button type="button" data-open="statsDlg">📊 <span data-t="stats"></span></button>
+    <button type="button" id="shareBtn">📸 <span data-t="share"></span></button>
+    <button type="button" data-open="proDlg" class="pro">✨ Pro</button>
+  </nav>
+  <footer class="legal"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html" data-t="privacy"></a></footer>
+</main>
+
+<dialog id="shopDlg"><form method="dialog"><h2 data-t="shop"></h2><div id="shopList" class="grid"></div><button class="close" data-t="close"></button></form></dialog>
+<dialog id="statsDlg"><form method="dialog"><h2 data-t="stats"></h2><div id="statsBody"></div><button class="close" data-t="close"></button></form></dialog>
+<dialog id="proDlg"><form method="dialog" id="proForm">
+  <h2>✨ Moosi Pro</h2>
+  <ul class="perks" id="perks"></ul>
+  <p class="price"><b id="priceTag"></b> <span data-t="once"></span></p>
+  <a class="primary buy" id="buyLink" target="_blank" rel="noopener" data-t="buy"></a>
+  <label class="lic"><span data-t="haveKey"></span><input id="licInput" autocomplete="off" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"></label>
+  <button type="button" id="licBtn" data-t="activate"></button>
+  <p class="small" id="licMsg"></p>
+  <button class="close" data-t="close"></button>
+</form></dialog>
+<dialog id="returnDlg"><form method="dialog">
+  <h2 data-t="backQ"></h2>
+  <p data-t="backText"></p>
+  <button value="lock" class="primary" data-t="backLock"></button>
+  <button value="app" data-t="backApp"></button>
+</form></dialog>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

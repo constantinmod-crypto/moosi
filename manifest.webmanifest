@@ -1,0 +1,18 @@
+{
+  "name": "Moosi – Fokus-Buddy",
+  "short_name": "Moosi",
+  "description": "Moosi wächst, solange du fokussiert bleibst.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef3e6",
+  "theme_color": "#2f5d3a",
+  "lang": "de",
+  "categories": ["productivity", "education", "lifestyle"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
